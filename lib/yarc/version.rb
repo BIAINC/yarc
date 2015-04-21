@@ -1,0 +1,3 @@
+module Yarc
+  VERSION = "0.0.1"
+end
