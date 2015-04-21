@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Yarc::VERSION
   spec.authors       = ["aliakb"]
   spec.email         = ["abaturytski@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = "Yet Another Redis Cache"
+  spec.description   = "Redis-backed cache with temporary and permanent storage"
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -20,4 +20,8 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "redis", "~> 3.0"
+  spec.add_development_dependency "multi_json", "~> 1.0"
+  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "simplecov", "~> 0.10"
 end
