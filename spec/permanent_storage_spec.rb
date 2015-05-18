@@ -16,6 +16,7 @@ describe Yarc::PermanentStorage do
   it {is_expected.to respond_to(:namespace)}
   it {is_expected.to respond_to(:keys)}
   it {is_expected.to respond_to(:add)}
+  it {is_expected.to respond_to(:delete)}
 
   describe ".new" do
     it "rejects nil config" do
@@ -73,19 +74,6 @@ describe Yarc::PermanentStorage do
       deserialized = config.serializer.deserialize(raw_object)
       allow(config.serializer).to receive(:deserialize).and_return(deserialized)
       expect(storage.get(key)).to eq deserialized
-    end
-  end
-
-  describe "#delete" do
-    let(:key) {SecureRandom.uuid}
-
-    before(:each) do
-      allow(redis).to receive(:del)
-    end
-
-    it "deletes a key" do
-      expect(redis).to receive(:del).once.with("#{config.namespace}:Permanent:#{key}")
-      storage.delete(key)
     end
   end
 

@@ -20,11 +20,6 @@ module Yarc
       columns.empty? ? nil : config.serializer.deserialize(columns)
     end
 
-    def delete(key)
-      key = redis_key(key)
-      redis.del(key)
-    end
-
     def release(key)
       # Just return actual key name.
       redis_key(key)

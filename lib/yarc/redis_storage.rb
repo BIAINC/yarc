@@ -21,6 +21,11 @@ module Yarc
       key
     end
 
+    def delete(*keys)
+      keys = keys.flatten.map{|k| redis_key(k)}
+      redis.del(keys)
+    end
+
     private
 
     def redis

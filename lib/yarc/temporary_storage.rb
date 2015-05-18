@@ -21,11 +21,6 @@ module Yarc
       columns.empty? ? nil : config.serializer.deserialize(columns)
     end
 
-    def delete(key)
-      key = redis_key(key)
-      redis.del(key)
-    end
-
     def extend(key)
       redis.expire(redis_key(key), config.temporary_item_ttl)
     end

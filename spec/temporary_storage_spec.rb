@@ -11,6 +11,7 @@ describe Yarc::TemporaryStorage do
   it {is_expected.to respond_to(:namespace)}
   it {is_expected.to respond_to(:keys)}
   it {is_expected.to respond_to(:add)}
+  it {is_expected.to respond_to(:delete)}
 
   def create_config
     Yarc::Config.new("Yarc").tap do |config|
@@ -73,16 +74,6 @@ describe Yarc::TemporaryStorage do
     it "deserializes redis data" do
       expect(config.serializer).to receive(:deserialize).once.with(serialized_object).and_call_original
       storage.get(key)
-    end
-  end
-
-  describe "#delete" do
-    let(:key) {%w(key1 key2).sample}
-    let(:redis_key) {"#{config.namespace}:Temporary:#{key}"}
-
-    it "deletes key from redis" do
-      expect(redis).to receive(:del).once.with(redis_key)
-      storage.delete(key)
     end
   end
 

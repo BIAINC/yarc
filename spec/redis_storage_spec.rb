@@ -88,4 +88,14 @@ describe Yarc::RedisStorage do
       expect(storage.add(object)).to eq unique_id
     end
   end
+
+  describe "#delete" do
+    it "deletes keys from redis" do
+      keys = %w(key1 key2)
+      redis_keys = %w(Yarc:RedisStorage:key1 Yarc:RedisStorage:key2)
+
+      expect(config.redis).to receive(:del).once.with(redis_keys)
+      storage.delete(*keys)
+    end
+  end
 end
