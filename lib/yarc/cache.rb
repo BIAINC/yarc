@@ -7,6 +7,10 @@ module Yarc
       @default ||= new(Config.new("Yarc"))
     end
 
+    def self.default=(value)
+      @default = value
+    end
+
     attr_reader(:config)
 
     def initialize(config)

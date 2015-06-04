@@ -98,4 +98,44 @@ describe Yarc::RedisStorage do
       storage.delete(*keys)
     end
   end
+
+  describe "#exists?" do
+    let(:redis) {mock_redis}
+    let(:key) {"key"}
+
+    before(:each) do
+      allow(config).to receive(:redis).and_return(redis)
+    end
+
+    def mock_redis
+      double("redis").tap do |r|
+        allow(r).to receive(:exists).and_return(true)
+      end
+    end
+
+    it "calls redis" do
+      expect(redis).to receive(:exists).once.with("Yarc:RedisStorage:#{key}").and_return(true)
+      storage.exists?(key)
+    end
+
+    context "with existing key" do
+      before(:each) do
+        allow(redis).to receive(:exists).and_return(true)
+      end
+
+      it "returns true" do
+        expect(storage.exists?(key)).to be true
+      end
+    end
+
+    context "with missing key" do
+      before(:each) do
+        allow(redis).to receive(:exists).and_return(false)
+      end
+
+      it "returns false" do
+        expect(storage.exists?(key)).to be false
+      end
+    end
+  end
 end
