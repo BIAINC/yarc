@@ -12,6 +12,7 @@ describe Yarc::TemporaryStorage do
   it {is_expected.to respond_to(:keys)}
   it {is_expected.to respond_to(:add)}
   it {is_expected.to respond_to(:delete)}
+  it {is_expected.to respond_to(:exists?)}
 
   def create_config
     Yarc::Config.new("Yarc").tap do |config|

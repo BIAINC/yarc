@@ -26,6 +26,10 @@ module Yarc
       redis.del(keys)
     end
 
+    def exists?(key)
+      redis.exists(redis_key(key))
+    end
+
     private
 
     def redis

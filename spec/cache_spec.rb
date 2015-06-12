@@ -7,7 +7,7 @@ describe Yarc::Cache do
 
   describe ".default" do
     before(:each) do
-      Yarc::Cache.remove_instance_variable(:@default) rescue nil
+      Yarc::Cache.default = nil
       allow(Yarc::Config).to receive(:new).and_return(config)
     end
 

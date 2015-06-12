@@ -17,6 +17,7 @@ describe Yarc::PermanentStorage do
   it {is_expected.to respond_to(:keys)}
   it {is_expected.to respond_to(:add)}
   it {is_expected.to respond_to(:delete)}
+  it {is_expected.to respond_to(:exists?)}
 
   describe ".new" do
     it "rejects nil config" do
