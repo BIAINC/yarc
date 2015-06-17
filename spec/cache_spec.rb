@@ -77,6 +77,23 @@ describe Yarc::Cache do
   end
 
   describe "#in_transaction" do
+    let(:redis) {mock_redis}
+
+    before(:each) do
+      allow(config).to receive(:redis).and_return(redis)
+    end
+
+    def mock_redis
+      double("redis").tap do |r|
+        allow(r).to receive(:multi).and_yield
+      end
+    end
+
+    it "initiates redis transaction" do
+      expect(redis).to receive(:multi).once.and_yield
+      cache.in_transaction {}
+    end
+
     it "yields control" do
       expect{|b| cache.in_transaction(&b)}.to yield_control.once
     end

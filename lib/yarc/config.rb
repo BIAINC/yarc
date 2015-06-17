@@ -6,9 +6,12 @@ module Yarc
   class Config
     attr_reader(:namespace)
 
-    def initialize(namespace)
+    def initialize(namespace, attributes = {})
       raise(ArgumentError, "Namespace cannot be blank!") if namespace.nil? || namespace.empty?
       @namespace = namespace
+
+      self.redis = Redis.new(attributes[:redis]) if attributes.has_key?(:redis)
+      self.temporary_item_ttl = attributes[:temporary_item_ttl] if attributes.has_key?(:temporary_item_ttl)
     end
 
     def redis
