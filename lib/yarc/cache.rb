@@ -27,8 +27,13 @@ module Yarc
     end
 
     def in_transaction(&block)
-      #TODO: implement
-      block.call
+      @config.redis.multi(&block)
+    end
+
+    def to_temporary(key)
+      temporary.delete(key)
+      redis_key = permanent.release(key)
+      temporary.migrate(redis_key, key)
     end
   end
 end

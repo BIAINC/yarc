@@ -10,8 +10,8 @@ module Yarc
       @namespace = "#{config.namespace}:#{namespace}"
     end
 
-    def keys
-      pattern = "#{namespace}:*"
+    def keys(prefix = "")
+      pattern = "#{namespace}:#{prefix}*"
       redis.keys(pattern).map{|k| k[(namespace.size + 1)..-1]}
     end
 
