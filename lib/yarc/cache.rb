@@ -1,5 +1,6 @@
 require "yarc/temporary_storage"
 require "yarc/permanent_storage"
+require "yarc/transaction"
 
 module Yarc
   class Cache
@@ -27,13 +28,11 @@ module Yarc
     end
 
     def in_transaction(&block)
-      @config.redis.multi(&block)
+      @config.transaction_manager.in_transaction(&block)
     end
 
-    def to_temporary(key)
-      temporary.delete(key)
-      redis_key = permanent.release(key)
-      temporary.migrate(redis_key, key)
+    def unwatch
+      config.redis.unwatch
     end
   end
 end

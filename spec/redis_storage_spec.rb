@@ -138,4 +138,30 @@ describe Yarc::RedisStorage do
       end
     end
   end
+
+  describe "#watch" do
+    let(:redis) {mock_redis}
+
+    before(:each) do
+      allow(config).to receive(:redis).and_return(redis)
+    end
+
+    def mock_redis
+      double("redis").tap do |r|
+        allow(r).to receive(:watch)
+      end
+    end
+
+    it "watches a single key" do
+      key = "test"
+      expect(redis).to receive(:watch).once.with(key)
+      storage.watch(key)
+    end
+
+    it "watches multiple keys" do
+      keys = %w(test1 test2)
+      expect(redis).to receive(:watch).once.with(*keys)
+      storage.watch(*keys)
+    end
+  end
 end

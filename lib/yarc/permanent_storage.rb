@@ -21,12 +21,12 @@ module Yarc
     end
 
     def release(key)
-      # Just return actual key name.
+      # Just return actual key name; nothing else to do here
       redis_key(key)
     end
 
-    def migrate(key, destination_key)
-      redis.rename(key, redis_key(destination_key))
+    def migrate(redis_key_name, new_key)
+      redis.rename(redis_key_name, redis_key(new_key))
     end
   end
 end

@@ -30,6 +30,11 @@ module Yarc
       redis.exists(redis_key(key))
     end
 
+    def watch(key, *keys)
+      keys = ([key] + keys).flatten
+      redis.watch(*keys)
+    end
+
     private
 
     def redis

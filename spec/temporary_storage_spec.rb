@@ -23,7 +23,7 @@ describe Yarc::TemporaryStorage do
 
   def mock_redis
     double("redis").tap do |redis|
-      allow(redis).to receive(:multi).and_yield
+      allow(redis).to receive(:multi).and_yield.and_return("OK")
       allow(redis).to receive(:expire)
     end
   end
@@ -55,7 +55,7 @@ describe Yarc::TemporaryStorage do
     end
 
     it "adds data with expiration" do
-      expect(redis).to receive(:hmset).ordered.with(redis_key, serialized_object)
+      expect(redis).to receive(:hmset).ordered.with(redis_key, *serialized_object)
       expect(redis).to receive(:expire).ordered.with(redis_key, item_ttl)
 
       storage.set(key, object)
@@ -78,23 +78,22 @@ describe Yarc::TemporaryStorage do
     end
   end
 
-  describe "#extend" do
+  describe "#extend_ttl" do
     let(:key) {%w(key1 key2).sample}
     let(:redis_key) {"#{config.namespace}:Temporary:#{key}"}
 
     it "extends lifetime of a key" do
       expect(redis).to receive(:expire).once.with(redis_key, item_ttl)
-      storage.extend(key)
+      storage.extend_ttl(key)
     end
   end
 
   describe "#release" do
-    let(:key) {%w(key1 key2).sample}
+    let(:key) {"temporary_key"}
     let(:redis_key) {"#{config.namespace}:Temporary:#{key}"}
 
     before(:each) do
-      allow(redis).to receive(:rename)
-      allow(redis).to receive(:persist)
+      allow(redis).to receive(:persist).and_return(1)
     end
 
     it "persists the key" do
@@ -102,29 +101,40 @@ describe Yarc::TemporaryStorage do
       storage.release(key)
     end
 
-    it "returns redis key" do
-      expect(storage.release(key)).to eq redis_key
+    context "with existing key" do
+      it "returns key name" do
+        expect(storage.release(key)).to eq redis_key
+      end
+    end
+
+    context "with missing key" do
+      before(:each) do
+        allow(redis).to receive(:persist).and_return(0)
+      end
+
+      it "returns nil" do
+        expect(storage.release(key)).to eq nil
+      end
     end
   end
 
   describe "#migrate" do
-    let(:key) {%w(key1 key2).sample}
-    let(:old_redis_key){%w(old1 old2).sample}
-    let(:new_redis_key){"#{config.namespace}:Temporary:#{key}"}
+    let(:original_redis_key) {"some redis key"}
+    let(:new_key) {"new_key"}
+    let(:new_redis_key) {"#{config.namespace}:Temporary:#{new_key}"}
 
     before(:each) do
       allow(redis).to receive(:rename)
-      allow(redis).to receive(:expire)
     end
 
     it "renames the key" do
-      expect(redis).to receive(:rename).once.with(old_redis_key, new_redis_key)
-      storage.migrate(old_redis_key, key)
+      expect(redis).to receive(:rename).once.with(original_redis_key, new_redis_key)
+      storage.migrate(original_redis_key, new_key)
     end
 
-    it "sets ttl on the key" do
+    it "sets TTL on the new key" do
       expect(redis).to receive(:expire).once.with(new_redis_key, item_ttl)
-      storage.migrate(old_redis_key, key)
+      storage.migrate(original_redis_key, new_key)
     end
   end
 end

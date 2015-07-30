@@ -79,22 +79,18 @@ describe Yarc::PermanentStorage do
   end
 
   describe "#release" do
-    let(:storage_key) {%w(key1 key2).sample}
-    let(:redis_key) {"#{config.namespace}:Permanent:#{storage_key}"}
-
-    it "returns redis key" do
-      expect(storage.release(storage_key)).to eq redis_key
+    it "returns key name" do
+      expect(storage.release("foo")).to eq "Yarc:PermanentStorage:Test:Permanent:foo"
     end
   end
 
   describe "#migrate" do
-    let(:source_redis_key) {%w(redis_key_1 redis_key_2).sample}
-    let(:storage_key) {%w(key1 key2)}
-    let(:redis_key) {"#{config.namespace}:Permanent:#{storage_key}"}
+    let(:redis_key) {"some redis key"}
+    let(:new_key) {"new_key"}
 
     it "renames the key" do
-      expect(redis).to receive(:rename).once.with(source_redis_key, redis_key)
-      storage.migrate(source_redis_key, storage_key)
+      expect(redis).to receive(:rename).once.with(redis_key, "Yarc:PermanentStorage:Test:Permanent:#{new_key}")
+      storage.migrate(redis_key, new_key)
     end
   end
 end
