@@ -10,7 +10,7 @@ module Yarc
 
     def set(key, value)
       with_expiring_key(key) do |key|
-        redis.hmset(key, config.serializer.serialize(value))
+        redis.hmset(key, *config.serializer.serialize(value))
       end
     end
 
@@ -21,27 +21,28 @@ module Yarc
       columns.empty? ? nil : config.serializer.deserialize(columns)
     end
 
-    def extend(key)
+    def extend_ttl(key)
       redis.expire(redis_key(key), config.temporary_item_ttl)
     end
 
     def release(key)
-      key = redis_key(key)
-      redis.persist(key)
-      key
+      rk = redis_key(key)
+      redis.persist(rk) == 0 ? nil : rk
     end
 
-    def migrate(key, destination_key)
-      new_key = redis_key(destination_key)
-      redis.rename(key, new_key)
-      redis.expire(new_key, config.temporary_item_ttl)
+    def migrate(redis_key_name, new_key)
+      new_redis_key = redis_key(new_key)
+      config.transaction_manager.in_transaction do
+        redis.rename(redis_key_name, new_redis_key)
+        redis.expire(new_redis_key, config.temporary_item_ttl)
+      end
     end
 
     private
 
     def with_expiring_key(key, *args, &block)
       key = redis_key(key)
-      redis.multi do
+      config.transaction_manager.in_transaction do
         block.call(key, *args)
         redis.expire(key, config.temporary_item_ttl)
       end

@@ -77,20 +77,20 @@ describe Yarc::Cache do
   end
 
   describe "#in_transaction" do
-    let(:redis) {mock_redis}
+    let(:transaction_manager) {mock_transaction_manager}
 
     before(:each) do
-      allow(config).to receive(:redis).and_return(redis)
+      allow(config).to receive(:transaction_manager).and_return(transaction_manager)
     end
 
-    def mock_redis
-      double("redis").tap do |r|
-        allow(r).to receive(:multi).and_yield
+    def mock_transaction_manager
+      double("transaction manager").tap do |tm|
+        allow(tm).to receive(:in_transaction).and_yield
       end
     end
 
-    it "initiates redis transaction" do
-      expect(redis).to receive(:multi).once.and_yield
+    it "calls the transaction manager" do
+      expect(transaction_manager).to receive(:in_transaction).once.and_yield
       cache.in_transaction {}
     end
 
@@ -98,13 +98,25 @@ describe Yarc::Cache do
       expect{|b| cache.in_transaction(&b)}.to yield_control.once
     end
 
-    it "returns value from the code block" do
-      expected = [1,:foo].sample
-      expect(cache.in_transaction{expected}).to eq expected
-    end
-
     it "doesn't swallow exception" do
       expect{cache.in_transaction{raise "Test"}}.to raise_error("Test")
+    end
+  end
+
+  describe "#unwatch" do
+    before(:each) do
+      allow(config).to receive(:redis).and_return(mock_redis)
+    end
+
+    def mock_redis
+      double("redis").tap do |r|
+        allow(r).to receive(:unwatch)
+      end
+    end
+
+    it "calls redis" do
+      expect(config.redis).to receive(:unwatch).once
+      cache.unwatch
     end
   end
 end

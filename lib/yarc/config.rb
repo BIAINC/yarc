@@ -1,6 +1,7 @@
 require "redis"
 require "yarc/serializers/multi_json_column_serializer"
 require "yarc/id_generators/int_id_generator"
+require "yarc/transaction_manager"
 
 module Yarc
   class Config
@@ -21,6 +22,7 @@ module Yarc
     def redis=(value)
       raise(ArgumentError, "Redis cannot be nil!") if value.nil?
       @redis = value
+      @transaction_manager = nil
     end
 
     def temporary_item_ttl
@@ -50,6 +52,10 @@ module Yarc
     def id_generator=(value)
       raise(ArgumentError, "ID generator cannot be nil!") if value.nil?
       @id_generator = value
+    end
+
+    def transaction_manager
+      @transaction_manager ||= TransactionManager.new(redis)
     end
   end
 end
