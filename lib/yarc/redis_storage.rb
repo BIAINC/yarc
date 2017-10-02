@@ -1,7 +1,6 @@
 module Yarc
   module RedisStorage
-    attr_reader(:config)
-    attr_reader(:namespace)
+    attr_reader :config, :namespace
 
     def initialize(config, namespace)
       raise(ArgumentError, "Config cannot be nil!") if config.nil?
