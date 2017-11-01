@@ -6,10 +6,10 @@ require 'yarc/version'
 Gem::Specification.new do |spec|
   spec.name          = "yarc"
   spec.version       = Yarc::VERSION
-  spec.authors       = ["BIA"]
-  spec.email         = ["dev@biaprotect.com"]
+  spec.authors       = ["TotalDiscovery LLC"]
+  spec.email         = ["dev@totaldiscovery.com"]
   spec.summary       = "Yet Another Redis Cache"
-  spec.description   = "Redis-backed cache with temporary and permanent storage"
+  spec.description   = "Redis-backed cache with temporary and permanent-ish storage"
   spec.homepage      = ""
   spec.license       = "none"
 
