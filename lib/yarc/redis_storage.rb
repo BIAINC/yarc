@@ -34,6 +34,20 @@ module Yarc
       redis.watch(*keys)
     end
 
+    def send_to(key, other_storage, must_exist)
+      full_key = redis_key(key)
+      other_storage.migrate(full_key, key, must_exist)
+    end
+
+    def with_checked_existence(must_exist, &block)
+      block.call
+    rescue Redis::CommandError => e
+      # yep, redis doesn't give exception types
+      raise unless /no such key/ =~ e.message
+      raise if must_exist
+      nil
+    end
+
     private
 
     def redis

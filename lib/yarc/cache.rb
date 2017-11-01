@@ -27,6 +27,14 @@ module Yarc
       @permanent ||= PermanentStorage.new(config)
     end
 
+    def make_temporary(key, must_exist)
+      permanent.send_to(key, temporary, must_exist)
+    end
+
+    def make_permanent(key, must_exist)
+      temporary.send_to(key, permanent, must_exist)
+    end
+
     def in_transaction(&block)
       @config.transaction_manager.in_transaction(&block)
     end

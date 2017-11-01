@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Yarc
   module IdGenerators
     class GuidIdGenerator

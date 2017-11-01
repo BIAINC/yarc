@@ -25,8 +25,10 @@ module Yarc
       redis_key(key)
     end
 
-    def migrate(redis_key_name, new_key)
-      redis.rename(redis_key_name, redis_key(new_key))
+    def migrate(redis_key_name, new_key, must_exist = true)
+      with_checked_existence(must_exist) do
+        redis.rename(redis_key_name, redis_key(new_key))
+      end
     end
   end
 end

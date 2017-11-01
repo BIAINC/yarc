@@ -30,11 +30,13 @@ module Yarc
       redis.persist(rk) == 0 ? nil : rk
     end
 
-    def migrate(redis_key_name, new_key)
+    def migrate(redis_key_name, new_key, must_exist = true)
       new_redis_key = redis_key(new_key)
-      config.transaction_manager.in_transaction do
-        redis.rename(redis_key_name, new_redis_key)
-        redis.expire(new_redis_key, config.temporary_item_ttl)
+      with_checked_existence(must_exist) do
+        config.transaction_manager.in_transaction do
+          redis.rename(redis_key_name, new_redis_key)
+          redis.expire(new_redis_key, config.temporary_item_ttl)
+        end
       end
     end
 
